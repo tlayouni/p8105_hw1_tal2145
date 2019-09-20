@@ -1,0 +1,122 @@
+---
+title: "Homework 1"
+author: "Troy Layouni"
+date: 2019-09-20
+output: github_document
+---
+
+## Question 1
+
+The first step is to load the tidyverse package
+
+```{r packages} 
+library(tidyverse) 
+```
+
+#### Question 1, part 1: Creating a new data frame that includes:
+
+  * A random sample of 8 from a normal distribution
+  * A logical vector that indicates whether the random sample variable is greater than zero
+  * A character vector
+  * A factor vector with three levels
+
+```{r Question_1_data_frame}
+
+Question_1_df = tibble(
+  random_sample = rnorm(8),
+  random_sample_gt0 = random_sample > 0, 
+  vec_char = c("absolute", "abstract", "academic", "accepted", "accident", "accuracy", "accurate", "achieved"),
+  vec_factor = factor(c("lowlevel", "lowlevel", "midlevel", "lowlevel", "midlevel", "biglevel","lowlevel", "biglevel"))
+  )  
+  
+
+```
+
+#### Question 1, part 2: Taking the mean of all 4 variables from the data frame.
+
+```{r means}
+mean(pull(Question_1_df, random_sample))
+mean(pull(Question_1_df, random_sample_gt0))
+mean(pull(Question_1_df, vec_char))
+mean(pull(Question_1_df, vec_factor))
+```
+
+When taking the mean of each of the variable in the data frame Question_1_df, we see that only our numeric vector produced by the random sample and our logical vector produce means, while both the character and factor vectors produce an NA response.
+
+#### Question 1, part 3: Converting the logical, character, and factor variables to numeric variables using as.numeric.
+
+```{r Converting_variables, eval=FALSE}
+as.numeric(pull(Question_1_df, random_sample_gt0))
+
+as.numeric(pull(Question_1_df, vec_char))
+
+as.numeric(pull(Question_1_df, vec_factor))
+```
+
+When we convert the logical variable to a numeric variable, we see that the "True" and "False" answers are converted into 1 and 0 respectively. The factor variable is also converted to numeric variable, assigning a number 1, 2, or 3 to each level of the factor. But when the same function, as.numeric, is applied to the character variable, R is unable to convert this variable type into any numbers, as there is no way for R to compare the value of characters or rank them in order to produce and number value. This explains how in the earlier steps, we were able to get a mean value for the logical variable but why we were unable to output a mean for the character variable. 
+
+#### Question 1, part 4: Converting variables in the following way:
+  * Converting the logical vector into a numeric and multiplying this by its corresponding random sample value
+  * Converting the logical vector into a factor and multiplying this by its corresponding random sample value
+  * Converting the logical vector into a factor, then converting it into a numeric before multiplying this by its corresponding random sample value
+
+```{r converted_products}
+product_numeric = as.numeric(pull(Question_1_df, random_sample_gt0))*(pull(Question_1_df, random_sample))
+
+product_factor = as.factor(pull(Question_1_df, random_sample_gt0))*(pull(Question_1_df, random_sample))
+
+logical_to_factor = as.numeric(as.factor(pull(Question_1_df, random_sample_gt0)))*(pull(Question_1_df, random_sample))
+```
+
+## Question 2
+
+#### Question 2, part 1: Creating a data frame with an x and y variable, a logical vector and a factor vector
+
+```{r Question_2_df}
+Question_2_df = tibble(
+x = rnorm(500),
+y = rnorm(500),
+sum_gt1 = x + y > 1,
+sum_gt1_numeric = as.numeric(sum_gt1),
+sum_gt1_factor = as.factor(sum_gt1),
+)
+```
+
+**Question_2_df is a data frame containing:**
+
+  * `r ncol(Question_2_df)` columns and `r nrow(Question_2_df)` rows 
+  * The variable x has a mean of `r mean(pull(Question_2_df, x))`, a median of `r median(pull(Question_2_df, x))` and a standard deviation of `r sd(pull(Question_2_df, x))`
+  * The proportion of cases with the sum of their x and y values larger than one is `r mean(pull(Question_2_df, sum_gt1_numeric))`
+
+#### Question 2, part 2: Creating scatterplots of variables x vs y using ggplot
+  * The first scatterplot has color points corresponding to the logical vector 
+  * The second has color points corresponding to the numeric vector
+  * The third has color points corresponding to the factor variable
+
+**Plot 1** 
+
+```{r Plot_1}
+ggplot(Question_2_df, aes(x = x, y = y, color = sum_gt1)) + geom_point()
+```
+
+Saving the first scatterplot to my project directory
+
+```{r Plot_save}
+ggsave("HW1_scatterplot.pdf", height = 4, width = 6)
+```
+
+**Plot 2**
+
+```{r Plot_2}
+ggplot(Question_2_df, aes(x = x, y = y, color = sum_gt1_numeric)) + geom_point()
+```
+
+**Plot 3** 
+
+```{r Plot_3}
+ggplot(Question_2_df, aes(x = x, y = y, color = sum_gt1_factor)) + geom_point()
+```
+
+The color scale on both the scatterplots colored for the logical and factor variables use a two tone color scale to represent False (red) and True (blue) because there are only two possible values in the data (binary data). The scatterplot colored by the numeric variable has a continuous color scale but because all the values for this variable are either 0 or 1, there are only two colors on the scatterplot (1 = light blue, 0 = dark blue). If the numeric variable was a continuous range of numeric values (and not based on the logical variable with only 2 values) the color of the dots would create a gradient instead. 
+
+
